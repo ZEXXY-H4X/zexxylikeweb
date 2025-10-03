@@ -1,4 +1,4 @@
-# ZEXXY Like Panel (Fixed Version)
+# ZEXXY Like Panel (Fixed Region + API)
 
 ## Backend
 1. Navigate to `backend/`
@@ -8,7 +8,7 @@
 ## Frontend
 1. Open `frontend/index.html` in browser
 2. Enter UID and region → Click Send Likes
-3. Real API call via backend proxy
+3. API short code mapping done automatically (ind / bd / us)
 
 ## Notes
 - Safe JSON parsing implemented → API errors handled gracefully

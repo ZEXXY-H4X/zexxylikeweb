@@ -25,7 +25,7 @@
         <input id="uid" type="text" inputmode="numeric" placeholder="Enter UID (e.g. 123456789)" />
         <select id="region">
           <option value="india">India</option>
-          <option value="bd">Bangladesh</option>
+          <option value="bangladesh">Bangladesh</option>
           <option value="us">USA</option>
         </select>
         <button class="btn" onclick="sendLikes()">🚀 Send Likes</button>
@@ -54,20 +54,30 @@ const outputEl = document.getElementById('output');
 const statusText = document.getElementById('statusText');
 const feedbackEl = document.getElementById('feedback');
 
+// mapping friendly name to API short code
+const regionMap = {
+  "india": "ind",
+  "bangladesh": "bd",
+  "us": "us"
+};
+
 function escapeHtml(s){return s?String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])):"";}
 
 document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{document.getElementById('welcomeCard').style.opacity=1;},200);});
 
 async function sendLikes(){
   const uid=document.getElementById('uid').value.trim();
-  const region=document.getElementById('region').value;
+  const regionDropdown = document.getElementById('region');
+  const friendlyRegion = regionDropdown.value;
+  const apiRegion = regionMap[friendlyRegion]; // short code for API
+
   feedbackEl.innerHTML='';
-  if(!uid){outputEl.innerHTML='⚠️ Please enter UID';return;}
+  if(!uid){outputEl.innerHTML='⚠️ Please enter UID'; return;}
   statusText.innerText='Processing...';
   outputEl.innerHTML='⏳ Sending request...';
 
   try{
-    const resp = await fetch(`${API_BASE}?uid=${encodeURIComponent(uid)}&region=${encodeURIComponent(region)}`);
+    const resp = await fetch(`${API_BASE}?uid=${encodeURIComponent(uid)}&region=${encodeURIComponent(apiRegion)}`);
     const text = await resp.text();
     let data;
     try { data = JSON.parse(text); } 
@@ -86,7 +96,7 @@ async function sendLikes(){
     let html='';
     html+=`👤 Name: ${escapeHtml(nickname)}<br>`;
     html+=`🆔 UID: ${escapeHtml(returnedUID)}<br>`;
-    html+=`🌍 Server: ${escapeHtml(region.toUpperCase())}<br>`;
+    html+=`🌍 Server: ${escapeHtml(friendlyRegion.toUpperCase())}<br>`;
     html+=`😭 Before: ${escapeHtml(likesBefore)}<br>`;
     html+=`☠️ After: ${escapeHtml(likesAfter)}<br>`;
     html+=`😊 Likes Given: ${escapeHtml(likesGiven)}<br>`;

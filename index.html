@@ -27,6 +27,7 @@
       justify-content:center;
       align-items:flex-start;
       min-height:100vh;
+      overflow-x:hidden;
     }
 
     .wrapper{
@@ -34,9 +35,28 @@
       max-width:980px;
       display:grid;
       gap:20px;
-      grid-template-columns: 1fr;
+      grid-template-columns:1fr;
       align-items:start;
+      position:relative;
     }
+
+    /* welcome entry animation */
+    .welcome-card{
+      position:absolute;
+      top:10px; left:50%;
+      transform:translateX(-50%);
+      background:var(--accent);
+      color:#000;
+      padding:16px 24px;
+      border-radius:12px;
+      font-weight:700;
+      font-size:16px;
+      opacity:0;
+      animation:fadeIn 1s forwards, fadeOut 1s 3s forwards;
+      z-index:10;
+    }
+    @keyframes fadeIn{0%{opacity:0;transform:translate(-50%,20px)}100%{opacity:1;transform:translateX(-50%)}} 
+    @keyframes fadeOut{0%{opacity:1}100%{opacity:0;transform:translate(-50%,-20px)}}
 
     /* header card */
     .hero{
@@ -128,20 +148,11 @@
     .alert.warn{background:rgba(255,212,0,0.06);color:var(--accent)}
     .alert.error{background:rgba(239,68,68,0.08);color:var(--danger)}
 
-    /* raw JSON viewer */
     pre.json{
       background:#050506;padding:10px;border-radius:8px;margin-top:10px;font-size:12px;color:#cbd5e1;overflow:auto;
       max-height:220px;border:1px solid rgba(255,255,255,0.02)
     }
 
-    /* totals box */
-    .side{
-      display:flex;
-      gap:12px;
-      align-items:center;
-      justify-content:space-between;
-      flex-wrap:wrap;
-    }
     .total-box{
       background:linear-gradient(90deg, rgba(0,0,0,0.25), rgba(255,255,255,0.02));
       padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02);
@@ -150,73 +161,46 @@
     .total-box .num{font-size:20px;font-weight:900;color:#7ef9ff}
     .total-box .cap{color:var(--muted);font-size:12px;margin-top:6px}
 
-    /* responsive: side-by-side on desktop */
     @media(min-width:860px){
-      .wrapper{grid-template-columns: 1fr 340px;}
+      .wrapper{grid-template-columns:1fr 340px;}
       .main{grid-column:1/-1}
       .hero{grid-column:1/-1}
-      .panel.large{min-height:280px}
     }
-
-    /* mobile tweaks */
     @media(max-width:420px){
       .form-row{flex-direction:column}
       .form-row select{width:100%}
       .owner-link{padding:6px 10px;font-size:12px}
     }
-
-    /* small helpers */
-    .muted{color:var(--muted)}
-    a.small-link{color:var(--accent);text-decoration:none;font-size:13px}
-    .tiny{font-size:12px;color:var(--muted)}
   </style>
 </head>
 <body>
+  <div class="welcome-card" id="welcomeCard">Welcome to ZEXXY Like Panel!</div>
   <div class="wrapper">
     <div>
       <div class="hero panel">
         <img src="avatar.jpg" alt="avatar" class="avatar" />
         <div class="title">
           <h1 style="margin-bottom:4px">🔥 ZEXXY Like</h1>
-          <div class="subtitle">Free Fire Likes • Fast • Live <span class="tiny">— API response shown below</span></div>
+          <div class="subtitle">Free Fire Likes • Fast • Live</div>
         </div>
         <a class="owner-link" href="https://t.me/ZEXXY_H4X" target="_blank">👑 @ZEXXY_H4X</a>
       </div>
 
-      <div class="panel large">
-        <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">
-          <div style="flex:1;min-width:0">
-            <div class="form-row">
-              <input id="uid" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Enter UID (e.g. 123456789)" />
-              <select id="region">
-                <option value="india">India</option>
-                <option value="bd">Bangladesh</option>
-                <option value="us">USA</option>
-              </select>
-              <button id="sendBtn" class="btn" onclick="sendLikes()">🚀 Send Likes</button>
-            </div>
-            <div class="status-line">Status: <span id="statusText" class="muted">Ready</span></div>
-          </div>
-        </div>
-
-        <div id="output" class="result" aria-live="polite">
-          <div class="row"><div class="label">Info</div><div class="value muted">No request yet. Enter UID and press "Send Likes".</div></div>
-        </div>
-
-        <div id="feedback" style="margin-top:8px"></div>
-      </div>
-
       <div class="panel">
-        <div style="display:flex;justify-content:space-between;align-items:center">
-          <div>
-            <div class="tiny">Raw API response (for debugging)</div>
-          </div>
-          <div>
-            <a class="small-link" id="toggleRaw" href="#" onclick="toggleRaw(event)">Show/Hide JSON</a>
-          </div>
+        <div class="form-row">
+          <input id="uid" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Enter UID (e.g. 123456789)" />
+          <select id="region">
+            <option value="india">India</option>
+            <option value="bd">Bangladesh</option>
+            <option value="us">USA</option>
+          </select>
+          <button id="sendBtn" class="btn" onclick="sendLikes()">🚀 Send Likes</button>
         </div>
-
-        <pre id="rawJson" class="json" style="display:none">/* API JSON will appear here */</pre>
+        <div class="status-line">Status: <span id="statusText" class="muted">Ready</span></div>
+        <div id="output" class="result" aria-live="polite">
+          <div class="row"><div class="label">Info</div><div class="value muted">No request yet.</div></div>
+        </div>
+        <div id="feedback"></div>
       </div>
     </div>
 
@@ -225,168 +209,64 @@
         <div class="num" id="totalLikes">0</div>
         <div class="cap">Total Likes Sent</div>
       </div>
-
-      <div class="panel" style="min-width:160px;border-radius:12px">
-        <div class="tiny muted">Quick actions</div>
-        <div style="margin-top:10px;display:flex;gap:8px;flex-direction:column">
-          <button class="btn" onclick="clearOutput()" style="background:#2b2b2b;color:#fff;padding:8px">Clear</button>
-          <button class="btn" onclick="simulateError()" style="background:#2b2b2b;color:#fff;padding:8px">Test Error</button>
-        </div>
+      <div class="panel">
+        <div class="tiny muted">Raw API</div>
+        <pre id="rawJson" class="json" style="display:none">/* API JSON will appear here */</pre>
       </div>
     </div>
   </div>
 
-  <script>
-    // Keep API hidden in UI — but we call it internally
-    const API_BASE = 'https://zexxyapi.vercel.app/like'; // not shown to user except raw JSON area
-    let totalLikesSent = 0;
-    const totalLikesEl = document.getElementById('totalLikes');
-    const rawJsonEl = document.getElementById('rawJson');
-    const outputEl = document.getElementById('output');
-    const statusText = document.getElementById('statusText');
-    const feedbackEl = document.getElementById('feedback');
+<script>
+const API_BASE = 'https://zexxyapi.vercel.app/like';
+let totalLikesSent = 0;
+const totalLikesEl = document.getElementById('totalLikes');
+const rawJsonEl = document.getElementById('rawJson');
+const outputEl = document.getElementById('output');
+const statusText = document.getElementById('statusText');
+const feedbackEl = document.getElementById('feedback');
 
-    function escapeHtml(s) {
-      if (s === null || s === undefined) return "";
-      return String(s).replace(/[&<>"']/g, function (m) {
-        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]);
-      });
-    }
+function escapeHtml(s){if(s==null)return "";return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 
-    function showStatus(t){
-      statusText.innerText = t;
-    }
+function showStatus(t){statusText.innerText=t;}
 
-    function toggleRaw(e){
-      e.preventDefault();
-      if(rawJsonEl.style.display === 'none'){ rawJsonEl.style.display = 'block'; }
-      else rawJsonEl.style.display = 'none';
-    }
+document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{document.getElementById('welcomeCard').style.opacity=1;},200);});
 
-    function clearOutput(){
-      outputEl.innerHTML = '<div class="row"><div class="label">Info</div><div class="value muted">No request yet. Enter UID and press "Send Likes".</div></div>';
-      feedbackEl.innerHTML = '';
-      rawJsonEl.textContent = '/* API JSON will appear here */';
-    }
-
-    function simulateError(){
-      // just to test error UI
-      showStatus('Processing...');
-      feedbackEl.innerHTML = '<div class="alert error">Simulated API error</div>';
-      setTimeout(()=> showStatus('Ready'), 1200);
-    }
-
-    async function sendLikes(){
-      const uid = document.getElementById('uid').value.trim();
-      const region = document.getElementById('region').value;
-
-      feedbackEl.innerHTML = '';
-      if(!uid){
-        outputEl.innerHTML = '<div class="row"><div class="label">Error</div><div class="value">Please enter UID</div></div>';
-        return;
-      }
-
-      showStatus('Processing...');
-      outputEl.innerHTML = '<div class="row"><div class="label">Request</div><div class="value muted">Contacting API...</div></div>';
-
-      try {
-        // Call actual API (URL kept internal)
-        const url = `${API_BASE}?uid=${encodeURIComponent(uid)}&server_name=${encodeURIComponent(region)}`;
-        const resp = await fetch(url, { method:'GET' });
-        const data = await resp.json();
-
-        // Show raw JSON (but user toggles visibility)
-        rawJsonEl.textContent = JSON.stringify(data, null, 2);
-
-        // If API returned an error status (non-200) but still returned JSON, handle gracefully
-        if (!data || typeof data !== 'object') {
-          outputEl.innerHTML = '<div class="alert error">Invalid API response</div>';
-          showStatus('Error');
-          return;
-        }
-
-        // Parse common fields safely (some APIs may use different keys)
-        const nickname = data.PlayerNickname ?? data.player_name ?? data.name ?? `Player_${escapeHtml(uid)}`;
-        const returnedUID = data.UID ?? data.uid ?? uid;
-        // Try some fields that may exist
-        const likesBefore = data.LikesbeforeCommand ?? data.likes_before ?? data.LikesBefore ?? '-';
-        const likesAfter = data.LikesafterCommand ?? data.likes_after ?? data.LikesAfter ?? '-';
-        // Prefer LikesGivenByAPI or LikesGiven
-        const likesGiven = (data.LikesGivenByAPI ?? data.LikesGiven ?? data.likes_given ?? null);
-
-        // Display parsed view
-        let html = '';
-        html += `<div class="row"><div class="label">✅ Result</div><div class="value">Like attempt completed</div></div>`;
-        html += `<div class="row"><div class="label">👤 Name</div><div class="value">${escapeHtml(nickname)}</div></div>`;
-        html += `<div class="row"><div class="label">🆔 UID</div><div class="value">${escapeHtml(returnedUID)}</div></div>`;
-        html += `<div class="row"><div class="label">🌍 Server</div><div class="value">${escapeHtml(region.toUpperCase())}</div></div>`;
-        html += `<div class="row"><div class="label">😭 Before</div><div class="value">${escapeHtml(likesBefore)}</div></div>`;
-        html += `<div class="row"><div class="label">☠️ After</div><div class="value">${escapeHtml(likesAfter)}</div></div>`;
-
-        // If likesGiven field exists and is zero => show special message
-        if (likesGiven !== null) {
-          html += `<div class="row"><div class="label">😊 Likes Given</div><div class="value">${escapeHtml(String(likesGiven))}</div></div>`;
-
-          if (Number(likesGiven) === 0) {
-            // Special message requested by you
-            feedbackEl.innerHTML = `<div class="alert warn">UID have received max like today</div>`;
-          } else if (!isNaN(Number(likesGiven))) {
-            // increment total counter by likesGiven
-            totalLikesSent += Number(likesGiven);
-            totalLikesEl.innerText = totalLikesSent;
-            feedbackEl.innerHTML = `<div class="alert success">+${escapeHtml(String(likesGiven))} likes added to total</div>`;
-          } else {
-            // if it's not numeric, just show raw info
-            feedbackEl.innerHTML = `<div class="alert">Likes given: ${escapeHtml(String(likesGiven))}</div>`;
-          }
-        } else {
-          // if API didn't give likesGiven, try to compute difference if possible
-          const b = Number(likesBefore);
-          const a = Number(likesAfter);
-          if (!isNaN(b) && !isNaN(a) && a >= b) {
-            const diff = a - b;
-            if (diff === 0) {
-              feedbackEl.innerHTML = `<div class="alert warn">UID have received max like today</div>`;
-            } else {
-              totalLikesSent += diff;
-              totalLikesEl.innerText = totalLikesSent;
-              feedbackEl.innerHTML = `<div class="alert success">+${diff} likes added to total</div>`;
-            }
-            html += `<div class="row"><div class="label">ℹ️ Computed</div><div class="value">Difference used: ${diff}</div></div>`;
-          } else {
-            html += `<div class="row"><div class="label">ℹ️ Note</div><div class="value muted">API did not return likes-given field</div></div>`;
-          }
-        }
-
-        // Show any API message if present
-        if (data.message) {
-          html += `<div class="row"><div class="label">Message</div><div class="value">${escapeHtml(String(data.message))}</div></div>`;
-        }
-        if (data.status) {
-          html += `<div class="row"><div class="label">Status</div><div class="value">${escapeHtml(String(data.status))}</div></div>`;
-        }
-
-        outputEl.innerHTML = html;
-        showStatus('Success');
-      } catch(err){
-        console.error(err);
-        rawJsonEl.textContent = `/* error */\n${String(err)}`;
-        outputEl.innerHTML = `<div class="alert error">API Error: ${escapeHtml(err.message ?? String(err))}</div>`;
-        showStatus('API Error');
-      }
-    }
-
-    // small auto-increment to make dashboard lively (keeps visible/realistic but not fake responses)
-    (function keepAliveCounter(){
-      setInterval(()=>{
-        const inc = Math.floor(Math.random()*2); // small background increments occasionally
-        if(inc>0){
-          totalLikesSent += inc;
-          totalLikesEl.innerText = totalLikesSent;
-        }
-      }, 3000);
-    })();
-
-  </script>
+async function sendLikes(){
+  const uid=document.getElementById('uid').value.trim();
+  const region=document.getElementById('region').value;
+  feedbackEl.innerHTML='';
+  if(!uid){outputEl.innerHTML='<div class="row"><div class="label">Error</div><div class="value">Please enter UID</div></div>';return;}
+  showStatus('Processing...');
+  outputEl.innerHTML='<div class="row"><div class="label">Request</div><div class="value muted">Contacting API...</div></div>';
+  try{
+    const url=`${API_BASE}?uid=${encodeURIComponent(uid)}&server_name=${encodeURIComponent(region)}`;
+    const resp = await fetch(url,{method:'GET'});
+    const data = await resp.json();
+    rawJsonEl.textContent = JSON.stringify(data,null,2);
+    if(!data||typeof data!=='object'){outputEl.innerHTML='<div class="alert error">Invalid API response</div>';showStatus('Error');return;}
+    const nickname=data.PlayerNickname??`Player_${escapeHtml(uid)}`;
+    const returnedUID=data.UID??uid;
+    const likesBefore=data.LikesbeforeCommand??'-';
+    const likesAfter=data.LikesafterCommand??'-';
+    const likesGiven=data.LikesGivenByAPI??0;
+    let html='';
+    html+=`<div class="row"><div class="label">👤 Name</div><div class="value">${escapeHtml(nickname)}</div></div>`;
+    html+=`<div class="row"><div class="label">🆔 UID</div><div class="value">${escapeHtml(returnedUID)}</div></div>`;
+    html+=`<div class="row"><div class="label">🌍 Server</div><div class="value">${escapeHtml(region.toUpperCase())}</div></div>`;
+    html+=`<div class="row"><div class="label">😭 Before</div><div class="value">${escapeHtml(likesBefore)}</div></div>`;
+    html+=`<div class="row"><div class="label">☠️ After</div><div class="value">${escapeHtml(likesAfter)}</div></div>`;
+    html+=`<div class="row"><div class="label">😊 Likes Given</div><div class="value">${escapeHtml(likesGiven)}</div></div>`;
+    outputEl.innerHTML=html;
+    if(likesGiven===0){feedbackEl.innerHTML=`<div class="alert warn">UID have received max like today</div>`;}
+    else{totalLikesSent+=Number(likesGiven);totalLikesEl.innerText=totalLikesSent;feedbackEl.innerHTML=`<div class="alert success">+${likesGiven} likes added</div>`;}
+    showStatus('Success');
+  }catch(err){
+    console.error(err);
+    rawJsonEl.textContent=`/* error */\n${String(err)}`;
+    outputEl.innerHTML=`<div class="alert error">API Error: ${escapeHtml(err.message??String(err))}</div>`;
+    showStatus('API Error');
+  }
+}
+</script>
 </body>
 </html>

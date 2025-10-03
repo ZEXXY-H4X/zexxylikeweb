@@ -14,7 +14,7 @@
     <div class="hero panel">
       <img src="avatar.jpg" alt="avatar" class="avatar" />
       <div class="title">
-        <h1 style="margin-bottom:4px">🔥 ZEXXY Like</h1>
+        <h1>🔥 ZEXXY Like</h1>
         <div class="subtitle">Free Fire Likes • Fast • Live</div>
       </div>
       <a class="owner-link" href="https://t.me/ZEXXY_H4X" target="_blank">👑 @ZEXXY_H4X</a>
@@ -22,18 +22,16 @@
 
     <div class="panel">
       <div class="form-row">
-        <input id="uid" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Enter UID (e.g. 123456789)" />
+        <input id="uid" type="text" inputmode="numeric" placeholder="Enter UID (e.g. 123456789)" />
         <select id="region">
           <option value="india">India</option>
           <option value="bd">Bangladesh</option>
           <option value="us">USA</option>
         </select>
-        <button id="sendBtn" class="btn" onclick="sendLikes()">🚀 Send Likes</button>
+        <button class="btn" onclick="sendLikes()">🚀 Send Likes</button>
       </div>
       <div class="status-line">Status: <span id="statusText">Ready</span></div>
-      <div id="output" class="result" aria-live="polite">
-        <div class="row"><div class="label">Info</div><div class="value muted">No request yet.</div></div>
-      </div>
+      <div id="output" class="result"></div>
       <div id="feedback"></div>
       <pre id="rawJson" class="json" style="display:none"></pre>
     </div>
@@ -56,7 +54,7 @@ const outputEl = document.getElementById('output');
 const statusText = document.getElementById('statusText');
 const feedbackEl = document.getElementById('feedback');
 
-function escapeHtml(s){if(s===null||s===undefined)return "";return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function escapeHtml(s){return s?String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])):"";}
 
 document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{document.getElementById('welcomeCard').style.opacity=1;},200);});
 
@@ -69,17 +67,21 @@ async function sendLikes(){
   outputEl.innerHTML='⏳ Sending request...';
 
   try{
-    const resp=await fetch(`${API_BASE}?uid=${encodeURIComponent(uid)}&region=${encodeURIComponent(region)}`);
-    const data=await resp.json();
+    const resp = await fetch(`${API_BASE}?uid=${encodeURIComponent(uid)}&region=${encodeURIComponent(region)}`);
+    const text = await resp.text();
+    let data;
+    try { data = JSON.parse(text); } 
+    catch(e){ outputEl.innerHTML='🚨 API returned invalid response'; statusText.innerText='API Error'; return; }
+
     rawJsonEl.textContent = JSON.stringify(data,null,2);
 
-    if(!data||typeof data!=='object'){outputEl.innerHTML='⚠️ Invalid API response';statusText.innerText='Error';return;}
+    if(!data||typeof data!=='object'){outputEl.innerHTML='⚠️ Invalid API response'; statusText.innerText='Error'; return;}
 
-    const nickname=data.PlayerNickname??`Player_${uid}`;
-    const returnedUID=data.UID??uid;
-    const likesBefore=data.LikesbeforeCommand??'-';
-    const likesAfter=data.LikesafterCommand??'-';
-    const likesGiven=data.LikesGivenByAPI??0;
+    const nickname = data.PlayerNickname??`Player_${uid}`;
+    const returnedUID = data.UID??uid;
+    const likesBefore = data.LikesbeforeCommand??'-';
+    const likesAfter = data.LikesafterCommand??'-';
+    const likesGiven = data.LikesGivenByAPI??0;
 
     let html='';
     html+=`👤 Name: ${escapeHtml(nickname)}<br>`;
@@ -95,7 +97,6 @@ async function sendLikes(){
 
     statusText.innerText='Success';
   }catch(err){
-    console.error(err);
     outputEl.innerHTML='🚨 API Error: '+escapeHtml(err.message);
     statusText.innerText='API Error';
   }

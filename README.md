@@ -1,4 +1,4 @@
-# ZEXXY Like Panel
+# ZEXXY Like Panel (Fixed Version)
 
 ## Backend
 1. Navigate to `backend/`
@@ -11,6 +11,6 @@
 3. Real API call via backend proxy
 
 ## Notes
-- CORS issues solved via backend proxy
-- Likes counter and max-like alert implemented
-- Mobile & Desktop responsive
+- Safe JSON parsing implemented → API errors handled gracefully
+- Likes counter, max-like alert, welcome animation included
+- Fully responsive for mobile & desktop

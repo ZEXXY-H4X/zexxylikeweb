@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ZEXXY Like — Gaming Panel</title>
+
+  <!-- Gaming font -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <header class="hero">
+      <div class="avatar-wrap">
+        <!-- Replace avatar.jpg with your picture (recommended: square image 512x512) -->
+        <img src="avatar.jpg" alt="Owner Avatar" class="avatar" />
+        <div class="avatar-glow"></div>
+      </div>
+      <div class="title-block">
+        <h1 class="site-title">🔥 ZEXXY Like</h1>
+        <p class="subtitle">Free Fire Likes • Fast • Live</p>
+        <a class="tg-btn" href="https://t.me/ZEXXY_H4X" target="_blank">👑 Owner @ZEXXY_H4X</a>
+      </div>
+    </header>
+
+    <main class="card">
+      <div class="form-row">
+        <input id="uid" type="text" placeholder="Enter UID (e.g. 123456789)" />
+        <select id="region">
+          <option value="india">India</option>
+          <option value="bd">Bangladesh</option>
+          <option value="us">USA</option>
+        </select>
+        <button id="sendBtn" onclick="sendLikes()">🚀 Send Likes</button>
+      </div>
+
+      <div id="output" class="result"></div>
+      <div class="footer-note">Status: <span id="statusText">Ready</span></div>
+    </main>
+
+    <footer class="site-footer">
+      <small>Made with ⚡ by ZEXXY • <a href="https://zexxyapi.vercel.app" target="_blank">API</a></small>
+    </footer>
+  </div>
+
+  <script>
+    async function sendLikes() {
+      const uid = document.getElementById("uid").value.trim();
+      const region = document.getElementById("region").value;
+      const out = document.getElementById("output");
+      const status = document.getElementById("statusText");
+
+      if (!uid) {
+        out.innerHTML = "⚠️ Please enter UID";
+        return;
+      }
+
+      out.innerHTML = "⏳ Processing your request...";
+      status.innerText = "Processing...";
+
+      try {
+        const res = await fetch(`https://zexxyapi.vercel.app/like?uid=${encodeURIComponent(uid)}&server_name=${encodeURIComponent(region)}`);
+        const data = await res.json();
+
+        if (!data || !data.PlayerNickname) {
+          out.innerHTML = "⚠️ Invalid UID or API Response.";
+          status.innerText = "Error";
+          return;
+        }
+
+        out.innerHTML = `
+          <div class="success">
+            <div class="line">✅ <strong>Like Sent Successfully!</strong></div>
+            <div class="line">👤 Name: ${escapeHtml(data.PlayerNickname)}</div>
+            <div class="line">🆔 UID: ${escapeHtml(data.UID)}</div>
+            <div class="line">🌍 Server: ${escapeHtml(region.toUpperCase())}</div>
+            <div class="line">😭 Before: ${escapeHtml(data.LikesbeforeCommand)}</div>
+            <div class="line">☠️ After: ${escapeHtml(data.LikesafterCommand)}</div>
+            <div class="line">😊 Likes Given: ${escapeHtml(data.LikesGivenByAPI)}</div>
+            <div class="line owner">🔥 OWNER: <a href="https://t.me/ZEXXY_H4X" target="_blank">@ZEXXY_H4X</a></div>
+          </div>
+        `;
+        status.innerText = "Success";
+      } catch (err) {
+        out.innerHTML = "🚨 API Error! " + (err.message || err);
+        status.innerText = "API Error";
+      }
+    }
+
+    // small helper to avoid XSS when inserting API text
+    function escapeHtml(s) {
+      if (s === null || s === undefined) return "";
+      return String(s).replace(/[&<>"']/g, function (m) {
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]);
+      });
+    }
+  </script>
+</body>
+</html>

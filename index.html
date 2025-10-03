@@ -1,129 +1,392 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>ZEXXY Like — Gaming Panel</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Orbitron', sans-serif; background:#111; color:#fff; margin:0; padding:0; }
-    .container { max-width: 500px; margin:50px auto; padding:20px; background:#1a1a1a; border-radius:12px; box-shadow:0 0 20px #000; }
-    .avatar-wrap { text-align:center; position:relative; }
-    .avatar { width:120px; height:120px; border-radius:50%; border:3px solid #ff0; }
-    .avatar-glow { position:absolute; top:-10px; left:50%; transform:translateX(-50%); width:140px; height:140px; border-radius:50%; box-shadow:0 0 20px #ff0; animation: glow 2s infinite alternate; }
-    @keyframes glow { 0%{box-shadow:0 0 20px #ff0;} 100%{box-shadow:0 0 40px #ff0;} }
-    .title-block { text-align:center; margin-top:10px; }
-    .tg-btn { display:inline-block; padding:8px 16px; background:#ff0; color:#111; border-radius:6px; text-decoration:none; margin-top:5px; }
-    .card { margin-top:20px; padding:15px; background:#222; border-radius:10px; }
-    .form-row { display:flex; gap:10px; margin-bottom:10px; }
-    input, select { flex:1; padding:8px; border-radius:6px; border:none; }
-    button { padding:8px 12px; border:none; border-radius:6px; background:#ff0; color:#111; cursor:pointer; }
-    .result { margin-top:10px; background:#111; padding:10px; border-radius:8px; min-height:70px; overflow:hidden; }
-    .line { margin:5px 0; }
-    .owner a { color:#ff0; text-decoration:none; }
-    .likes-counter { font-weight:bold; color:#0f0; }
-    .total-likes { font-weight:bold; color:#0ff; font-size:16px; margin-top:10px; text-align:center; }
-    footer { text-align:center; margin-top:20px; font-size:12px; color:#aaa; }
+    :root{
+      --bg:#0f0f12;
+      --card:#161618;
+      --muted:#9aa0a6;
+      --accent:#ffd400;
+      --success:#16a34a;
+      --danger:#ef4444;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:'Orbitron',sans-serif;
+      background:linear-gradient(180deg,#070709 0%,#0b0b0d 100%);
+      color:#fff;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      padding:20px;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+      min-height:100vh;
+    }
+
+    .wrapper{
+      width:100%;
+      max-width:980px;
+      display:grid;
+      gap:20px;
+      grid-template-columns: 1fr;
+      align-items:start;
+    }
+
+    /* header card */
+    .hero{
+      background:linear-gradient(90deg, rgba(255,212,0,0.06), transparent);
+      border:1px solid rgba(255,212,0,0.06);
+      padding:18px;
+      border-radius:12px;
+      display:flex;
+      gap:16px;
+      align-items:center;
+    }
+    .avatar{
+      width:84px;height:84px;border-radius:12px;object-fit:cover;border:3px solid var(--accent);
+      box-shadow:0 6px 24px rgba(0,0,0,0.6);
+    }
+    .title{
+      flex:1;
+    }
+    .title h1{margin:0;font-size:20px}
+    .subtitle{margin:4px 0 0 0;color:var(--muted);font-size:13px}
+    .owner-link{
+      display:inline-block;
+      background:var(--accent);
+      color:#0a0a0a;
+      padding:8px 12px;
+      border-radius:8px;
+      text-decoration:none;
+      font-weight:700;
+      font-size:13px;
+    }
+
+    /* main area */
+    .main{
+      display:grid;
+      gap:16px;
+      grid-template-columns: 1fr;
+    }
+
+    .panel{
+      background:var(--card);
+      border-radius:12px;
+      padding:14px;
+      border:1px solid rgba(255,255,255,0.03);
+    }
+
+    .form-row{
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .form-row input[type="text"]{
+      flex:1;
+      padding:10px 12px;
+      border-radius:8px;
+      border:none;
+      background:#0c0c0d;
+      color:#fff;
+      font-size:14px;
+    }
+    .form-row select{
+      width:120px;
+      padding:10px 8px;
+      border-radius:8px;
+      border:none;
+      background:#0c0c0d;
+      color:#fff;
+      font-size:14px;
+    }
+    .btn{
+      background:var(--accent);
+      color:#000;
+      border:none;
+      border-radius:8px;
+      padding:10px 14px;
+      cursor:pointer;
+      font-weight:700;
+      font-size:14px;
+    }
+    .btn:active{transform:translateY(1px)}
+
+    .status-line{color:var(--muted);font-size:13px;margin-top:8px}
+    .result{margin-top:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); padding:12px;border-radius:8px; font-size:14px; color:#fff; min-height:80px; overflow:auto}
+    .result .row{display:flex;gap:8px;align-items:center;margin:6px 0}
+    .label{color:var(--muted);min-width:120px;font-size:13px}
+    .value{font-weight:700}
+
+    .alert{padding:8px;border-radius:8px;margin-top:8px;font-weight:700}
+    .alert.success{background:rgba(22,163,74,0.12);color:var(--success)}
+    .alert.warn{background:rgba(255,212,0,0.06);color:var(--accent)}
+    .alert.error{background:rgba(239,68,68,0.08);color:var(--danger)}
+
+    /* raw JSON viewer */
+    pre.json{
+      background:#050506;padding:10px;border-radius:8px;margin-top:10px;font-size:12px;color:#cbd5e1;overflow:auto;
+      max-height:220px;border:1px solid rgba(255,255,255,0.02)
+    }
+
+    /* totals box */
+    .side{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      flex-wrap:wrap;
+    }
+    .total-box{
+      background:linear-gradient(90deg, rgba(0,0,0,0.25), rgba(255,255,255,0.02));
+      padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02);
+      min-width:160px;text-align:center;
+    }
+    .total-box .num{font-size:20px;font-weight:900;color:#7ef9ff}
+    .total-box .cap{color:var(--muted);font-size:12px;margin-top:6px}
+
+    /* responsive: side-by-side on desktop */
+    @media(min-width:860px){
+      .wrapper{grid-template-columns: 1fr 340px;}
+      .main{grid-column:1/-1}
+      .hero{grid-column:1/-1}
+      .panel.large{min-height:280px}
+    }
+
+    /* mobile tweaks */
+    @media(max-width:420px){
+      .form-row{flex-direction:column}
+      .form-row select{width:100%}
+      .owner-link{padding:6px 10px;font-size:12px}
+    }
+
+    /* small helpers */
+    .muted{color:var(--muted)}
+    a.small-link{color:var(--accent);text-decoration:none;font-size:13px}
+    .tiny{font-size:12px;color:var(--muted)}
   </style>
 </head>
 <body>
-  <div class="container">
-    <header class="hero">
-      <div class="avatar-wrap">
-        <img src="avatar.jpg" alt="Owner Avatar" class="avatar" />
-        <div class="avatar-glow"></div>
-      </div>
-      <div class="title-block">
-        <h1 class="site-title">🔥 ZEXXY Like</h1>
-        <p class="subtitle">Free Fire Likes • Fast • Live</p>
-        <a class="tg-btn" href="https://t.me/ZEXXY_H4X" target="_blank">👑 Owner @ZEXXY_H4X</a>
-      </div>
-    </header>
-
-    <main class="card">
-      <div class="form-row">
-        <input id="uid" type="text" placeholder="Enter UID (e.g. 123456789)" />
-        <select id="region">
-          <option value="india">India</option>
-          <option value="bd">Bangladesh</option>
-          <option value="us">USA</option>
-        </select>
-        <button id="sendBtn" onclick="sendLikes()">🚀 Send Likes</button>
+  <div class="wrapper">
+    <div>
+      <div class="hero panel">
+        <img src="avatar.jpg" alt="avatar" class="avatar" />
+        <div class="title">
+          <h1 style="margin-bottom:4px">🔥 ZEXXY Like</h1>
+          <div class="subtitle">Free Fire Likes • Fast • Live <span class="tiny">— API response shown below</span></div>
+        </div>
+        <a class="owner-link" href="https://t.me/ZEXXY_H4X" target="_blank">👑 @ZEXXY_H4X</a>
       </div>
 
-      <div id="output" class="result">
-        <div class="line">Status: <span id="statusText">Ready</span></div>
+      <div class="panel large">
+        <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">
+          <div style="flex:1;min-width:0">
+            <div class="form-row">
+              <input id="uid" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Enter UID (e.g. 123456789)" />
+              <select id="region">
+                <option value="india">India</option>
+                <option value="bd">Bangladesh</option>
+                <option value="us">USA</option>
+              </select>
+              <button id="sendBtn" class="btn" onclick="sendLikes()">🚀 Send Likes</button>
+            </div>
+            <div class="status-line">Status: <span id="statusText" class="muted">Ready</span></div>
+          </div>
+        </div>
+
+        <div id="output" class="result" aria-live="polite">
+          <div class="row"><div class="label">Info</div><div class="value muted">No request yet. Enter UID and press "Send Likes".</div></div>
+        </div>
+
+        <div id="feedback" style="margin-top:8px"></div>
       </div>
 
-      <div class="total-likes">Total Likes Sent: <span id="totalLikes">0</span></div>
-    </main>
+      <div class="panel">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div class="tiny">Raw API response (for debugging)</div>
+          </div>
+          <div>
+            <a class="small-link" id="toggleRaw" href="#" onclick="toggleRaw(event)">Show/Hide JSON</a>
+          </div>
+        </div>
 
-    <footer class="site-footer">
-      <small>Made with ⚡ by ZEXXY</small>
-    </footer>
+        <pre id="rawJson" class="json" style="display:none">/* API JSON will appear here */</pre>
+      </div>
+    </div>
+
+    <div class="side">
+      <div class="total-box panel">
+        <div class="num" id="totalLikes">0</div>
+        <div class="cap">Total Likes Sent</div>
+      </div>
+
+      <div class="panel" style="min-width:160px;border-radius:12px">
+        <div class="tiny muted">Quick actions</div>
+        <div style="margin-top:10px;display:flex;gap:8px;flex-direction:column">
+          <button class="btn" onclick="clearOutput()" style="background:#2b2b2b;color:#fff;padding:8px">Clear</button>
+          <button class="btn" onclick="simulateError()" style="background:#2b2b2b;color:#fff;padding:8px">Test Error</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
+    // Keep API hidden in UI — but we call it internally
+    const API_BASE = 'https://zexxyapi.vercel.app/like'; // not shown to user except raw JSON area
     let totalLikesSent = 0;
+    const totalLikesEl = document.getElementById('totalLikes');
+    const rawJsonEl = document.getElementById('rawJson');
+    const outputEl = document.getElementById('output');
+    const statusText = document.getElementById('statusText');
+    const feedbackEl = document.getElementById('feedback');
 
-    // Auto-increment likes on page load
-    function autoIncrementLikes() {
-      const totalLikesEl = document.getElementById("totalLikes");
-      setInterval(() => {
-        const increment = Math.floor(Math.random() * 3) + 1; // random increment 1-3
-        totalLikesSent += increment;
-        totalLikesEl.innerText = totalLikesSent;
-      }, 1000); // every 1 second
+    function escapeHtml(s) {
+      if (s === null || s === undefined) return "";
+      return String(s).replace(/[&<>"']/g, function (m) {
+        return ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]);
+      });
     }
 
-    autoIncrementLikes();
+    function showStatus(t){
+      statusText.innerText = t;
+    }
 
-    async function sendLikes() {
-      const uid = document.getElementById("uid").value.trim();
-      const region = document.getElementById("region").value;
-      const out = document.getElementById("output");
-      const status = document.getElementById("statusText");
-      const totalLikesEl = document.getElementById("totalLikes");
+    function toggleRaw(e){
+      e.preventDefault();
+      if(rawJsonEl.style.display === 'none'){ rawJsonEl.style.display = 'block'; }
+      else rawJsonEl.style.display = 'none';
+    }
 
-      if (!uid) {
-        out.innerHTML = "⚠️ Please enter UID";
+    function clearOutput(){
+      outputEl.innerHTML = '<div class="row"><div class="label">Info</div><div class="value muted">No request yet. Enter UID and press "Send Likes".</div></div>';
+      feedbackEl.innerHTML = '';
+      rawJsonEl.textContent = '/* API JSON will appear here */';
+    }
+
+    function simulateError(){
+      // just to test error UI
+      showStatus('Processing...');
+      feedbackEl.innerHTML = '<div class="alert error">Simulated API error</div>';
+      setTimeout(()=> showStatus('Ready'), 1200);
+    }
+
+    async function sendLikes(){
+      const uid = document.getElementById('uid').value.trim();
+      const region = document.getElementById('region').value;
+
+      feedbackEl.innerHTML = '';
+      if(!uid){
+        outputEl.innerHTML = '<div class="row"><div class="label">Error</div><div class="value">Please enter UID</div></div>';
         return;
       }
 
-      out.innerHTML = '<div class="line">⏳ Processing your request...</div>';
-      status.innerText = "Processing...";
+      showStatus('Processing...');
+      outputEl.innerHTML = '<div class="row"><div class="label">Request</div><div class="value muted">Contacting API...</div></div>';
 
-      setTimeout(() => {
-        const before = Math.floor(Math.random() * 1000);
-        const given = Math.floor(Math.random() * 50) + 1;
-        const after = before + given;
+      try {
+        // Call actual API (URL kept internal)
+        const url = `${API_BASE}?uid=${encodeURIComponent(uid)}&server_name=${encodeURIComponent(region)}`;
+        const resp = await fetch(url, { method:'GET' });
+        const data = await resp.json();
 
-        totalLikesSent += given;
-        totalLikesEl.innerText = totalLikesSent;
+        // Show raw JSON (but user toggles visibility)
+        rawJsonEl.textContent = JSON.stringify(data, null, 2);
 
-        let currentLikes = before;
-        out.innerHTML = '';
-        const interval = setInterval(() => {
-          if (currentLikes >= after) {
-            clearInterval(interval);
-            out.innerHTML = `
-              <div class="line">✅ <strong>Like Sent Successfully!</strong></div>
-              <div class="line">👤 Name: Player_${uid}</div>
-              <div class="line">🆔 UID: ${uid}</div>
-              <div class="line">🌍 Server: ${region.toUpperCase()}</div>
-              <div class="line">😭 Before: ${before}</div>
-              <div class="line">☠️ After: ${after}</div>
-              <div class="line">😊 Likes Given: ${given}</div>
-              <div class="line owner">🔥 OWNER: <a href="https://t.me/ZEXXY_H4X" target="_blank">@ZEXXY_H4X</a></div>
-            `;
-            status.innerText = "Success";
+        // If API returned an error status (non-200) but still returned JSON, handle gracefully
+        if (!data || typeof data !== 'object') {
+          outputEl.innerHTML = '<div class="alert error">Invalid API response</div>';
+          showStatus('Error');
+          return;
+        }
+
+        // Parse common fields safely (some APIs may use different keys)
+        const nickname = data.PlayerNickname ?? data.player_name ?? data.name ?? `Player_${escapeHtml(uid)}`;
+        const returnedUID = data.UID ?? data.uid ?? uid;
+        // Try some fields that may exist
+        const likesBefore = data.LikesbeforeCommand ?? data.likes_before ?? data.LikesBefore ?? '-';
+        const likesAfter = data.LikesafterCommand ?? data.likes_after ?? data.LikesAfter ?? '-';
+        // Prefer LikesGivenByAPI or LikesGiven
+        const likesGiven = (data.LikesGivenByAPI ?? data.LikesGiven ?? data.likes_given ?? null);
+
+        // Display parsed view
+        let html = '';
+        html += `<div class="row"><div class="label">✅ Result</div><div class="value">Like attempt completed</div></div>`;
+        html += `<div class="row"><div class="label">👤 Name</div><div class="value">${escapeHtml(nickname)}</div></div>`;
+        html += `<div class="row"><div class="label">🆔 UID</div><div class="value">${escapeHtml(returnedUID)}</div></div>`;
+        html += `<div class="row"><div class="label">🌍 Server</div><div class="value">${escapeHtml(region.toUpperCase())}</div></div>`;
+        html += `<div class="row"><div class="label">😭 Before</div><div class="value">${escapeHtml(likesBefore)}</div></div>`;
+        html += `<div class="row"><div class="label">☠️ After</div><div class="value">${escapeHtml(likesAfter)}</div></div>`;
+
+        // If likesGiven field exists and is zero => show special message
+        if (likesGiven !== null) {
+          html += `<div class="row"><div class="label">😊 Likes Given</div><div class="value">${escapeHtml(String(likesGiven))}</div></div>`;
+
+          if (Number(likesGiven) === 0) {
+            // Special message requested by you
+            feedbackEl.innerHTML = `<div class="alert warn">UID have received max like today</div>`;
+          } else if (!isNaN(Number(likesGiven))) {
+            // increment total counter by likesGiven
+            totalLikesSent += Number(likesGiven);
+            totalLikesEl.innerText = totalLikesSent;
+            feedbackEl.innerHTML = `<div class="alert success">+${escapeHtml(String(likesGiven))} likes added to total</div>`;
           } else {
-            currentLikes += Math.ceil(given / 10);
-            out.innerHTML = `<div class="line">Likes: <span class="likes-counter">${currentLikes}</span></div>`;
+            // if it's not numeric, just show raw info
+            feedbackEl.innerHTML = `<div class="alert">Likes given: ${escapeHtml(String(likesGiven))}</div>`;
           }
-        }, 50);
-      }, 1000);
+        } else {
+          // if API didn't give likesGiven, try to compute difference if possible
+          const b = Number(likesBefore);
+          const a = Number(likesAfter);
+          if (!isNaN(b) && !isNaN(a) && a >= b) {
+            const diff = a - b;
+            if (diff === 0) {
+              feedbackEl.innerHTML = `<div class="alert warn">UID have received max like today</div>`;
+            } else {
+              totalLikesSent += diff;
+              totalLikesEl.innerText = totalLikesSent;
+              feedbackEl.innerHTML = `<div class="alert success">+${diff} likes added to total</div>`;
+            }
+            html += `<div class="row"><div class="label">ℹ️ Computed</div><div class="value">Difference used: ${diff}</div></div>`;
+          } else {
+            html += `<div class="row"><div class="label">ℹ️ Note</div><div class="value muted">API did not return likes-given field</div></div>`;
+          }
+        }
+
+        // Show any API message if present
+        if (data.message) {
+          html += `<div class="row"><div class="label">Message</div><div class="value">${escapeHtml(String(data.message))}</div></div>`;
+        }
+        if (data.status) {
+          html += `<div class="row"><div class="label">Status</div><div class="value">${escapeHtml(String(data.status))}</div></div>`;
+        }
+
+        outputEl.innerHTML = html;
+        showStatus('Success');
+      } catch(err){
+        console.error(err);
+        rawJsonEl.textContent = `/* error */\n${String(err)}`;
+        outputEl.innerHTML = `<div class="alert error">API Error: ${escapeHtml(err.message ?? String(err))}</div>`;
+        showStatus('API Error');
+      }
     }
+
+    // small auto-increment to make dashboard lively (keeps visible/realistic but not fake responses)
+    (function keepAliveCounter(){
+      setInterval(()=>{
+        const inc = Math.floor(Math.random()*2); // small background increments occasionally
+        if(inc>0){
+          totalLikesSent += inc;
+          totalLikesEl.innerText = totalLikesSent;
+        }
+      }, 3000);
+    })();
+
   </script>
 </body>
 </html>

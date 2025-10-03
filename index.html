@@ -1,223 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ZEXXY Like — Gaming Panel</title>
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --bg:#0f0f12;
-      --card:#161618;
-      --muted:#9aa0a6;
-      --accent:#ffd400;
-      --success:#16a34a;
-      --danger:#ef4444;
-    }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:'Orbitron',sans-serif;
-      background:linear-gradient(180deg,#070709 0%,#0b0b0d 100%);
-      color:#fff;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-      padding:20px;
-      display:flex;
-      justify-content:center;
-      align-items:flex-start;
-      min-height:100vh;
-      overflow-x:hidden;
-    }
-
-    .wrapper{
-      width:100%;
-      max-width:980px;
-      display:grid;
-      gap:20px;
-      grid-template-columns:1fr;
-      align-items:start;
-      position:relative;
-    }
-
-    /* welcome entry animation */
-    .welcome-card{
-      position:absolute;
-      top:10px; left:50%;
-      transform:translateX(-50%);
-      background:var(--accent);
-      color:#000;
-      padding:16px 24px;
-      border-radius:12px;
-      font-weight:700;
-      font-size:16px;
-      opacity:0;
-      animation:fadeIn 1s forwards, fadeOut 1s 3s forwards;
-      z-index:10;
-    }
-    @keyframes fadeIn{0%{opacity:0;transform:translate(-50%,20px)}100%{opacity:1;transform:translateX(-50%)}} 
-    @keyframes fadeOut{0%{opacity:1}100%{opacity:0;transform:translate(-50%,-20px)}}
-
-    /* header card */
-    .hero{
-      background:linear-gradient(90deg, rgba(255,212,0,0.06), transparent);
-      border:1px solid rgba(255,212,0,0.06);
-      padding:18px;
-      border-radius:12px;
-      display:flex;
-      gap:16px;
-      align-items:center;
-    }
-    .avatar{
-      width:84px;height:84px;border-radius:12px;object-fit:cover;border:3px solid var(--accent);
-      box-shadow:0 6px 24px rgba(0,0,0,0.6);
-    }
-    .title{
-      flex:1;
-    }
-    .title h1{margin:0;font-size:20px}
-    .subtitle{margin:4px 0 0 0;color:var(--muted);font-size:13px}
-    .owner-link{
-      display:inline-block;
-      background:var(--accent);
-      color:#0a0a0a;
-      padding:8px 12px;
-      border-radius:8px;
-      text-decoration:none;
-      font-weight:700;
-      font-size:13px;
-    }
-
-    /* main area */
-    .main{
-      display:grid;
-      gap:16px;
-      grid-template-columns: 1fr;
-    }
-
-    .panel{
-      background:var(--card);
-      border-radius:12px;
-      padding:14px;
-      border:1px solid rgba(255,255,255,0.03);
-    }
-
-    .form-row{
-      display:flex;
-      gap:10px;
-      align-items:center;
-    }
-    .form-row input[type="text"]{
-      flex:1;
-      padding:10px 12px;
-      border-radius:8px;
-      border:none;
-      background:#0c0c0d;
-      color:#fff;
-      font-size:14px;
-    }
-    .form-row select{
-      width:120px;
-      padding:10px 8px;
-      border-radius:8px;
-      border:none;
-      background:#0c0c0d;
-      color:#fff;
-      font-size:14px;
-    }
-    .btn{
-      background:var(--accent);
-      color:#000;
-      border:none;
-      border-radius:8px;
-      padding:10px 14px;
-      cursor:pointer;
-      font-weight:700;
-      font-size:14px;
-    }
-    .btn:active{transform:translateY(1px)}
-
-    .status-line{color:var(--muted);font-size:13px;margin-top:8px}
-    .result{margin-top:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); padding:12px;border-radius:8px; font-size:14px; color:#fff; min-height:80px; overflow:auto}
-    .result .row{display:flex;gap:8px;align-items:center;margin:6px 0}
-    .label{color:var(--muted);min-width:120px;font-size:13px}
-    .value{font-weight:700}
-
-    .alert{padding:8px;border-radius:8px;margin-top:8px;font-weight:700}
-    .alert.success{background:rgba(22,163,74,0.12);color:var(--success)}
-    .alert.warn{background:rgba(255,212,0,0.06);color:var(--accent)}
-    .alert.error{background:rgba(239,68,68,0.08);color:var(--danger)}
-
-    pre.json{
-      background:#050506;padding:10px;border-radius:8px;margin-top:10px;font-size:12px;color:#cbd5e1;overflow:auto;
-      max-height:220px;border:1px solid rgba(255,255,255,0.02)
-    }
-
-    .total-box{
-      background:linear-gradient(90deg, rgba(0,0,0,0.25), rgba(255,255,255,0.02));
-      padding:12px;border-radius:10px;border:1px solid rgba(255,255,255,0.02);
-      min-width:160px;text-align:center;
-    }
-    .total-box .num{font-size:20px;font-weight:900;color:#7ef9ff}
-    .total-box .cap{color:var(--muted);font-size:12px;margin-top:6px}
-
-    @media(min-width:860px){
-      .wrapper{grid-template-columns:1fr 340px;}
-      .main{grid-column:1/-1}
-      .hero{grid-column:1/-1}
-    }
-    @media(max-width:420px){
-      .form-row{flex-direction:column}
-      .form-row select{width:100%}
-      .owner-link{padding:6px 10px;font-size:12px}
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ZEXXY Like Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="welcome-card" id="welcomeCard">Welcome to ZEXXY Like Panel!</div>
-  <div class="wrapper">
-    <div>
-      <div class="hero panel">
-        <img src="avatar.jpg" alt="avatar" class="avatar" />
-        <div class="title">
-          <h1 style="margin-bottom:4px">🔥 ZEXXY Like</h1>
-          <div class="subtitle">Free Fire Likes • Fast • Live</div>
-        </div>
-        <a class="owner-link" href="https://t.me/ZEXXY_H4X" target="_blank">👑 @ZEXXY_H4X</a>
+<div class="welcome-card" id="welcomeCard">Welcome to ZEXXY Like Panel!</div>
+<div class="wrapper">
+  <div>
+    <div class="hero panel">
+      <img src="avatar.jpg" alt="avatar" class="avatar" />
+      <div class="title">
+        <h1 style="margin-bottom:4px">🔥 ZEXXY Like</h1>
+        <div class="subtitle">Free Fire Likes • Fast • Live</div>
       </div>
-
-      <div class="panel">
-        <div class="form-row">
-          <input id="uid" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Enter UID (e.g. 123456789)" />
-          <select id="region">
-            <option value="india">India</option>
-            <option value="bd">Bangladesh</option>
-            <option value="us">USA</option>
-          </select>
-          <button id="sendBtn" class="btn" onclick="sendLikes()">🚀 Send Likes</button>
-        </div>
-        <div class="status-line">Status: <span id="statusText" class="muted">Ready</span></div>
-        <div id="output" class="result" aria-live="polite">
-          <div class="row"><div class="label">Info</div><div class="value muted">No request yet.</div></div>
-        </div>
-        <div id="feedback"></div>
-      </div>
+      <a class="owner-link" href="https://t.me/ZEXXY_H4X" target="_blank">👑 @ZEXXY_H4X</a>
     </div>
 
-    <div class="side">
-      <div class="total-box panel">
-        <div class="num" id="totalLikes">0</div>
-        <div class="cap">Total Likes Sent</div>
+    <div class="panel">
+      <div class="form-row">
+        <input id="uid" type="text" inputmode="numeric" pattern="[0-9]*" placeholder="Enter UID (e.g. 123456789)" />
+        <select id="region">
+          <option value="india">India</option>
+          <option value="bd">Bangladesh</option>
+          <option value="us">USA</option>
+        </select>
+        <button id="sendBtn" class="btn" onclick="sendLikes()">🚀 Send Likes</button>
       </div>
-      <div class="panel">
-        <div class="tiny muted">Raw API</div>
-        <pre id="rawJson" class="json" style="display:none">/* API JSON will appear here */</pre>
+      <div class="status-line">Status: <span id="statusText">Ready</span></div>
+      <div id="output" class="result" aria-live="polite">
+        <div class="row"><div class="label">Info</div><div class="value muted">No request yet.</div></div>
       </div>
+      <div id="feedback"></div>
+      <pre id="rawJson" class="json" style="display:none"></pre>
     </div>
   </div>
 
+  <div class="side">
+    <div class="total-box panel">
+      <div class="num" id="totalLikes">0</div>
+      <div class="cap">Total Likes Sent</div>
+    </div>
+  </div>
+</div>
+
 <script>
-const API_BASE = 'https://zexxyapi.vercel.app/like';
+const API_BASE = '/api/like';
 let totalLikesSent = 0;
 const totalLikesEl = document.getElementById('totalLikes');
 const rawJsonEl = document.getElementById('rawJson');
@@ -225,9 +56,7 @@ const outputEl = document.getElementById('output');
 const statusText = document.getElementById('statusText');
 const feedbackEl = document.getElementById('feedback');
 
-function escapeHtml(s){if(s==null)return "";return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
-
-function showStatus(t){statusText.innerText=t;}
+function escapeHtml(s){if(s===null||s===undefined)return "";return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 
 document.addEventListener('DOMContentLoaded',()=>{setTimeout(()=>{document.getElementById('welcomeCard').style.opacity=1;},200);});
 
@@ -235,36 +64,40 @@ async function sendLikes(){
   const uid=document.getElementById('uid').value.trim();
   const region=document.getElementById('region').value;
   feedbackEl.innerHTML='';
-  if(!uid){outputEl.innerHTML='<div class="row"><div class="label">Error</div><div class="value">Please enter UID</div></div>';return;}
-  showStatus('Processing...');
-  outputEl.innerHTML='<div class="row"><div class="label">Request</div><div class="value muted">Contacting API...</div></div>';
+  if(!uid){outputEl.innerHTML='⚠️ Please enter UID';return;}
+  statusText.innerText='Processing...';
+  outputEl.innerHTML='⏳ Sending request...';
+
   try{
-    const url=`${API_BASE}?uid=${encodeURIComponent(uid)}&server_name=${encodeURIComponent(region)}`;
-    const resp = await fetch(url,{method:'GET'});
-    const data = await resp.json();
+    const resp=await fetch(`${API_BASE}?uid=${encodeURIComponent(uid)}&region=${encodeURIComponent(region)}`);
+    const data=await resp.json();
     rawJsonEl.textContent = JSON.stringify(data,null,2);
-    if(!data||typeof data!=='object'){outputEl.innerHTML='<div class="alert error">Invalid API response</div>';showStatus('Error');return;}
-    const nickname=data.PlayerNickname??`Player_${escapeHtml(uid)}`;
+
+    if(!data||typeof data!=='object'){outputEl.innerHTML='⚠️ Invalid API response';statusText.innerText='Error';return;}
+
+    const nickname=data.PlayerNickname??`Player_${uid}`;
     const returnedUID=data.UID??uid;
     const likesBefore=data.LikesbeforeCommand??'-';
     const likesAfter=data.LikesafterCommand??'-';
     const likesGiven=data.LikesGivenByAPI??0;
+
     let html='';
-    html+=`<div class="row"><div class="label">👤 Name</div><div class="value">${escapeHtml(nickname)}</div></div>`;
-    html+=`<div class="row"><div class="label">🆔 UID</div><div class="value">${escapeHtml(returnedUID)}</div></div>`;
-    html+=`<div class="row"><div class="label">🌍 Server</div><div class="value">${escapeHtml(region.toUpperCase())}</div></div>`;
-    html+=`<div class="row"><div class="label">😭 Before</div><div class="value">${escapeHtml(likesBefore)}</div></div>`;
-    html+=`<div class="row"><div class="label">☠️ After</div><div class="value">${escapeHtml(likesAfter)}</div></div>`;
-    html+=`<div class="row"><div class="label">😊 Likes Given</div><div class="value">${escapeHtml(likesGiven)}</div></div>`;
-    outputEl.innerHTML=html;
-    if(likesGiven===0){feedbackEl.innerHTML=`<div class="alert warn">UID have received max like today</div>`;}
-    else{totalLikesSent+=Number(likesGiven);totalLikesEl.innerText=totalLikesSent;feedbackEl.innerHTML=`<div class="alert success">+${likesGiven} likes added</div>`;}
-    showStatus('Success');
+    html+=`👤 Name: ${escapeHtml(nickname)}<br>`;
+    html+=`🆔 UID: ${escapeHtml(returnedUID)}<br>`;
+    html+=`🌍 Server: ${escapeHtml(region.toUpperCase())}<br>`;
+    html+=`😭 Before: ${escapeHtml(likesBefore)}<br>`;
+    html+=`☠️ After: ${escapeHtml(likesAfter)}<br>`;
+    html+=`😊 Likes Given: ${escapeHtml(likesGiven)}<br>`;
+    outputEl.innerHTML = html;
+
+    if(likesGiven===0){feedbackEl.innerHTML='<div class="alert warn">UID have received max like today</div>';}
+    else{totalLikesSent+=likesGiven; totalLikesEl.innerText=totalLikesSent; feedbackEl.innerHTML=`<div class="alert success">+${likesGiven} likes added</div>`;}
+
+    statusText.innerText='Success';
   }catch(err){
     console.error(err);
-    rawJsonEl.textContent=`/* error */\n${String(err)}`;
-    outputEl.innerHTML=`<div class="alert error">API Error: ${escapeHtml(err.message??String(err))}</div>`;
-    showStatus('API Error');
+    outputEl.innerHTML='🚨 API Error: '+escapeHtml(err.message);
+    statusText.innerText='API Error';
   }
 }
 </script>
